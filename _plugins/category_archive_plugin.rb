@@ -21,7 +21,7 @@ module Jekyll
 
   module CategoryArchiveUtil
     def self.archive_base(site)
-      site.config['category_archive'] && site.config['category_archive']['path'] || ''
+      site.config.dig('category_archive', 'path') || ''
     end
   end
 
@@ -35,7 +35,7 @@ module Jekyll
 
     def posts_group_by_category(site)
       category_map = {}
-      site.posts.each {|p| p.categories.each {|c| (category_map[c] ||= []) << p } }
+      site.posts.docs.each {|p| p.data.dig('categories')&.each {|c| (category_map[c] ||= []) << p } }
       category_map
     end
   end
@@ -57,7 +57,7 @@ module Jekyll
       end
 
 
-      if context.registers[:site].config['category_archive'] && context.registers[:site].config['category_archive']['slugify']
+      if context.registers[:site].config.dig('category_archive', 'slugify')
         category = Utils.slugify(category)
       end
 
@@ -79,13 +79,13 @@ module Jekyll
       @dir = dir
       @category = category
 
-      if site.config['category_archive'] && site.config['category_archive']['slugify']
+      if site.config['category_archive'] && site.config.dig('category_archive', 'slugify')
         @category_dir_name = Utils.slugify(@category) # require sanitize here
-      else 
+      else
         @category_dir_name = @category
       end
 
-      @layout =  site.config['category_archive'] && site.config['category_archive']['layout'] || 'category_archive'
+      @layout =  site.config.dig('category_archive', 'layout') || 'category_archive'
       self.ext = '.html'
       self.basename = 'index'
       self.content = <<-EOS
